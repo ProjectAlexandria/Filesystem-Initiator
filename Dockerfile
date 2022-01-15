@@ -14,7 +14,7 @@ ENV JAVA_OPTS='-Xmx128m' \
 
 COPY --from=build /target/filesystem-initiator-*.jar /filesystem-initiator.jar
 
-CMD java -jar /config-server.jar
+CMD java -jar /filesystem-initiator.jar
 
 # Volume with shared data
 VOLUME /alexandriadata
