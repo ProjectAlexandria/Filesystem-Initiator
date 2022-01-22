@@ -9,7 +9,7 @@ spring:
 alexandria:
     initiator:
         filesystem:
-            cron: "5/* * * * * *"
+            cron: "*/5 * * * * *"
 ---
 spring:
     cloud:
@@ -24,3 +24,4 @@ spring:
     config:
         activate:
             on-profile: config-server
+        import: "configserver:"

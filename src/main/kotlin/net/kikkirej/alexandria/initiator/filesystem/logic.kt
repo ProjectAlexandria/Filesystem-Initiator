@@ -1,5 +1,6 @@
 package net.kikkirej.alexandria.initiator.filesystem
 
+import net.kikkirej.alexandria.initiator.filesystem.camunda.CamundaLayer
 import net.kikkirej.alexandria.initiator.filesystem.config.FileSystemInitConfig
 import net.kikkirej.alexandria.initiator.filesystem.config.FilesystemSourceConfig
 import net.kikkirej.alexandria.initiator.filesystem.config.GeneralProperties
@@ -13,15 +14,19 @@ import java.nio.file.Files
 import java.util.Date
 import java.sql.Timestamp
 
+private const val cron = "";
 
+@Service
 class FilesystemInitiatorScheduler(@Autowired val config: FileSystemInitConfig,
                                    @Autowired val sourceRepository: SourceRepository,
                                    @Autowired val projectRepository: ProjectRepository,
                                    @Autowired val versionRepository: VersionRepository,
                                    @Autowired val analysisRepository: AnalysisRepository,
-                                   @Autowired val copyUtil: CopyUtil){
+                                   @Autowired val copyUtil: CopyUtil,
+                                   @Autowired val camundaLayer: CamundaLayer){
 
-    @Scheduled(cron = "5/* * * * * *")
+    @Scheduled(cron = "*/5 * * * * *")
+    //@Scheduled(cron = "${alexandria.initiator.filesystem.cron}")
     fun scheduled(){
         for (sourceConfig in config.sources) {
             val source: Source
@@ -69,6 +74,7 @@ class FilesystemInitiatorScheduler(@Autowired val config: FileSystemInitConfig,
         val version = getVersion(project)
         val analysis = createAnalysis(version)
         copyFolderContents(file, analysis.id)
+        camundaLayer.startProcess(analysis.id)
     }
 
     private fun copyFolderContents(file: File, id: Long) {
@@ -86,7 +92,7 @@ class FilesystemInitiatorScheduler(@Autowired val config: FileSystemInitConfig,
         if(versionOptional.isPresent){
             return versionOptional.get()
         }else{
-            val version = Version(id = 0, default = true, name = "folder", project = project, metadata = setOf())
+            val version = Version(id = 0, default_version = true, name = "folder", project = project, metadata = setOf())
             versionRepository.save(version)
             return version
         }
@@ -110,7 +116,7 @@ class CopyUtil(@Autowired val generalProperties: GeneralProperties){
     fun copy(source: File, id: Long) {
         val destinationPath :String = generalProperties.sharedfolder + File.separator + id;
         val destination = File(destinationPath)
-        destination.mkdirs()
+        //destination.mkdirs()
         Files.copy(source.toPath(), destination.toPath())
     }
 
