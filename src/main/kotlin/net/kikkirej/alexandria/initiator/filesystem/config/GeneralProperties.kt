@@ -10,4 +10,5 @@ import org.springframework.context.annotation.Configuration
 class GeneralProperties{
     var sharedfolder: String = "/alexandriadata"
     var camundaEndpoint: String = ""
+    var processDefintionKey="alexandria-default"
 }
