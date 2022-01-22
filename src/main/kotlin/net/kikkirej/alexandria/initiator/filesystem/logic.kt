@@ -5,12 +5,13 @@ import net.kikkirej.alexandria.initiator.filesystem.config.FileSystemInitConfig
 import net.kikkirej.alexandria.initiator.filesystem.config.FilesystemSourceConfig
 import net.kikkirej.alexandria.initiator.filesystem.config.GeneralProperties
 import net.kikkirej.alexandria.initiator.filesystem.exception.WrongSourceException
+import org.apache.commons.io.FileUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
-import org.springframework.util.FileCopyUtils
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.util.Date
 import java.sql.Timestamp
 
@@ -74,7 +75,7 @@ class FilesystemInitiatorScheduler(@Autowired val config: FileSystemInitConfig,
         val version = getVersion(project)
         val analysis = createAnalysis(version)
         copyFolderContents(file, analysis.id)
-        camundaLayer.startProcess(analysis.id)
+        camundaLayer.startProcess(project, version, analysis)
     }
 
     private fun copyFolderContents(file: File, id: Long) {
@@ -117,7 +118,7 @@ class CopyUtil(@Autowired val generalProperties: GeneralProperties){
         val destinationPath :String = generalProperties.sharedfolder + File.separator + id;
         val destination = File(destinationPath)
         //destination.mkdirs()
-        Files.copy(source.toPath(), destination.toPath())
+        FileUtils.copyDirectory(source, destination)
     }
 
 }
