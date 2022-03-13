@@ -10,6 +10,4 @@ class FileSystemInitConfig {
     var cron: String = "5/* * * * * *"
 }
 
-class FilesystemSourceConfig(var id: Long, var name: String, var path: String) {
-    constructor() : this(0, "", "")
-}
+class FilesystemSourceConfig(var id: Long, var name: String, var path: String)

@@ -6,6 +6,7 @@ import net.kikkirej.alexandria.initiator.filesystem.config.FilesystemSourceConfi
 import net.kikkirej.alexandria.initiator.filesystem.config.GeneralProperties
 import net.kikkirej.alexandria.initiator.filesystem.exception.WrongSourceException
 import org.apache.commons.io.FileUtils
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -26,10 +27,14 @@ class FilesystemInitiatorScheduler(@Autowired val config: FileSystemInitConfig,
                                    @Autowired val copyUtil: CopyUtil,
                                    @Autowired val camundaLayer: CamundaLayer){
 
-    @Scheduled(cron = "*/5 * * * * *")
+    val log = LoggerFactory.getLogger(javaClass)
+
+    @Scheduled(initialDelay = 100, fixedRate = 24*60*60*1000)
     //@Scheduled(cron = "${alexandria.initiator.filesystem.cron}")
     fun scheduled(){
+        log.info("starting analysis")
         for (sourceConfig in config.sources) {
+            log.info("analyzing source: " + sourceConfig)
             val source: Source
             try {
                 source = getSourceObject(sourceConfig)

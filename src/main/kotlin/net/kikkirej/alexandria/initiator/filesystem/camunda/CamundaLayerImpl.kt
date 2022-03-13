@@ -15,7 +15,9 @@ class CamundaLayerImpl (@Qualifier("remote") val runtimeService: RuntimeService,
                         @Autowired val generalProperties: GeneralProperties) : CamundaLayer{
 
     override fun startProcess(project: Project, version: Version, analysis: Analysis) {
-        val processVariables = mapOf<String, String>("version_name" to version.name,
+        val processVariables = mapOf<String, String>(
+            "project_identifier" to project.externalIdentifier,
+            "version_name" to version.name,
             "source_type" to project.source.type,
             "source_name" to project.source.name,
             "path" to getFilePath(analysis))
